@@ -1,4 +1,5 @@
 ﻿open System
+open System.IO
 
 let rec inputRome () = 
     printfn "Введите римскую цифру"
@@ -39,10 +40,11 @@ let romeToInt x =
     | "VII" -> 7
     | "VIII" -> 8
     | "IX" -> 9
+    | _ -> 0
 
 let mapFun list =
     list
-    |> List.map romeToInt
+    |> Seq.map romeToInt
 
 let rec inputInt () =
     printfn "Введите десятичную цифру"
@@ -63,12 +65,19 @@ let rec inputInt () =
 
 let foldFun list =
     list
-    |> List.fold (fun acc x -> 
+    |> Seq.fold (fun acc x -> 
         if x % 2 = 0 then
             acc * 10 + x
         else
             acc
         ) 0
+
+let findRarestExtension path =
+    Directory.GetFiles(path, "*.*", SearchOption.AllDirectories)
+    |> Seq.map Path.GetExtension
+    |> Seq.groupBy id
+    |> Seq.map (fun (ext, files) -> ext, Seq.length files)
+    |> Seq.minBy snd
     
 [<EntryPoint>]
 let main argvs =
@@ -77,12 +86,18 @@ let main argvs =
     match task with
     | "1" ->
         printfn "Введите список из римских цифр"
-        let listRome = inputRome()
-        printfn "Список римских цифр переведённых на десятичное представление: %A" (mapFun listRome)
+        let listRome = inputRome() |> mapFun
+        printf "Список римских цифр переведённых на десятичное представление: "
+        for n in listRome do printf $"{n} "
     | "2" ->
         printfn "Введите список из десятичных цифр"
-        let listToFold = inputInt()
-        printfn "Число из десятичных цифр списка: %i" (foldFun listToFold)
+        let listToFold = inputInt() |> foldFun
+        printfn "Число из десятичных цифр списка: %i" listToFold
+    | "3" ->
+        printf "Введите путь к каталогу: "
+        let path = Console.ReadLine()
+        let ext, count = findRarestExtension path
+        printfn "Самое редкое расширение: %s (%d файлов)" ext count
     | _ ->
         ()
     0
