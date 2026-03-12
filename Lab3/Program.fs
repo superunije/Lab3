@@ -75,7 +75,7 @@ let foldFun list =
 let findRarestExtension path =
     Directory.GetFiles(path, "*.*", SearchOption.AllDirectories)
     |> Seq.map Path.GetExtension
-    |> Seq.groupBy id
+    |> Seq.groupBy (fun x -> x)
     |> Seq.map (fun (ext, files) -> ext, Seq.length files)
     |> Seq.minBy snd
     
