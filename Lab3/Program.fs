@@ -1,33 +1,20 @@
 ﻿open System
 open System.IO
 
-let rec inputRome () = 
-    printfn "Введите римскую цифру"
-    let input = Console.ReadLine()
-    match input with
-    | "I" ->
-        "I" :: inputRome()
-    | "II" ->
-        "II" :: inputRome()
-    | "III" ->
-        "III" :: inputRome()
-    | "IV" ->
-        "IV" :: inputRome()
-    | "V" ->
-        "V" :: inputRome()
-    | "VI" ->
-        "VI" :: inputRome()
-    | "VII" ->
-        "VII" :: inputRome()
-    | "VIII" ->
-        "VIII" :: inputRome()
-    | "IX" ->
-        "IX" :: inputRome()
-    | "" ->
-        []
-    | _ ->
-        printfn "Введена не римская цифра I - IX"
-        inputRome()
+let rec inputRome () =
+    seq {
+        printfn "Введите римскую цифру"
+        let input = Console.ReadLine()
+        match input with
+        | "" -> ()
+        | "I" | "II" | "III" | "IV" | "V"
+        | "VI" | "VII" | "VIII" | "IX" ->
+            yield input
+            yield! inputRome()
+        | _ ->
+            printfn "Введена не римская цифра I - IX"
+            yield! inputRome()
+    }
 
 let romeToInt x =
     match x with
@@ -47,21 +34,20 @@ let mapFun list =
     |> Seq.map romeToInt
 
 let rec inputInt () =
-    printfn "Введите десятичную цифру"
-    let input = Console.ReadLine()
-    if input = "" then
-        []
-    else
-        match Int32.TryParse(input) with
-        | true, value ->
-            if value >= 0 && value <= 9 then
-                value :: inputInt()
-            else
-                printfn "Ошибка! Введите десятичную цифру"
-                inputInt()
-        | false, _ ->
-            printfn "Ошибка! Введите десятичную цифру"
-            inputInt()
+    seq {
+        printfn "Введите десятичную цифру"
+        let input = Console.ReadLine()
+        if input = "" then
+            ()
+        else
+            match Int32.TryParse(input) with
+            | true, value when value >= 0 && value <= 9 ->
+                yield value
+                yield! inputInt()
+            | _ ->
+                printfn "Ошибка! Введите цифру от 0 до 9"
+                yield! inputInt()
+    }
 
 let foldFun list =
     list
@@ -86,7 +72,7 @@ let main argvs =
     match task with
     | "1" ->
         printfn "Введите список из римских цифр"
-        let listRome = inputRome() |> mapFun
+        let listRome = inputRome() |> mapFun |> Seq.toList
         printf "Список римских цифр переведённых на десятичное представление: "
         for n in listRome do printf $"{n} "
     | "2" ->
