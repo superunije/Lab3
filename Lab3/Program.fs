@@ -29,9 +29,10 @@ let romeToInt x =
     | "IX" -> 9
     | _ -> 0
 
-let mapFun list =
-    list
+let mapFun seq =
+    seq
     |> Seq.map romeToInt
+    
 
 let rec inputInt () =
     seq {
@@ -49,8 +50,8 @@ let rec inputInt () =
                 yield! inputInt()
     }
 
-let foldFun list =
-    list
+let foldFun seq =
+    seq
     |> Seq.fold (fun acc x -> 
         if x % 2 = 0 then
             acc * 10 + x
@@ -58,12 +59,23 @@ let foldFun list =
             acc
         ) 0
 
-let findRarestExtension path =
-    Directory.GetFiles(path, "*.*", SearchOption.AllDirectories)
-    |> Seq.map Path.GetExtension
-    |> Seq.groupBy (fun x -> x)
-    |> Seq.map (fun (ext, files) -> ext, Seq.length files)
-    |> Seq.minBy snd
+let rec findRarestExtension() =
+    printf "Введите путь к каталогу: "
+    let path = Console.ReadLine()
+    if Directory.Exists(path) then
+        let files = Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories) 
+        if (Seq.isEmpty files) then
+            printfn "Каталог пустой. Повторите ввод пути"
+            findRarestExtension()
+        else
+            files
+            |> Seq.map Path.GetExtension
+            |> Seq.groupBy (fun x -> x)
+            |> Seq.map (fun (ext, files) -> ext, Seq.length files)
+            |> Seq.minBy snd
+    else
+        printfn "Ошибка. Повторите ввод пути"
+        findRarestExtension()
     
 [<EntryPoint>]
 let main argvs =
@@ -72,17 +84,15 @@ let main argvs =
     match task with
     | "1" ->
         printfn "Введите список из римских цифр"
-        let listRome = inputRome() |> mapFun |> Seq.toList
-        printf "Список римских цифр переведённых на десятичное представление: "
-        for n in listRome do printf $"{n} "
+        let seqRome = inputRome() |> mapFun 
+        printf "Список римских цифр переведённых на десятичное представление: %A" seqRome
+        // for n in seqRome do printf $"{n} "
     | "2" ->
         printfn "Введите список из десятичных цифр"
-        let listToFold = inputInt() |> foldFun
-        printfn "Число из десятичных цифр списка: %i" listToFold
+        let seqToFold = inputInt() |> foldFun
+        printfn "Число из десятичных цифр списка: %i" seqToFold
     | "3" ->
-        printf "Введите путь к каталогу: "
-        let path = Console.ReadLine()
-        let ext, count = findRarestExtension path
+        let ext, count = findRarestExtension()
         printfn "Самое редкое расширение: %s (%d файлов)" ext count
     | _ ->
         ()
