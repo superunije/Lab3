@@ -33,7 +33,6 @@ let romeToInt x =
 //    }
 
 let rec inputRome () =
-    printfn "Введите римскую цифру"
     Console.ReadLine().Split(' ')
     |> Seq.map romeToInt
     |> Seq.filter (fun x -> x > 0)
@@ -87,12 +86,12 @@ let main argvs =
     let task = Console.ReadLine()
     match task with
     | "1" ->
-        printfn "Введите список из римских цифр"
+        printfn "Введите римские цифры"
         let seqRome = inputRome()
         printfn "Список римских цифр переведённых на десятичное представление: "
         seqRome |> Seq.iter (fun n -> printf "%i " n)
     | "2" ->
-        printfn "Введите список из десятичных цифр"
+        printfn "Введите последовательность из десятичных цифр"
         let seqToFold = inputInt() |> foldFun
         printfn "Число из десятичных цифр списка: %i" seqToFold
     | "3" ->
