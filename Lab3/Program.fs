@@ -1,21 +1,6 @@
 ﻿open System
 open System.IO
 
-let rec inputRome () =
-    seq {
-        printfn "Введите римскую цифру"
-        let input = Console.ReadLine()
-        match input with
-        | "" -> ()
-        | "I" | "II" | "III" | "IV" | "V"
-        | "VI" | "VII" | "VIII" | "IX" ->
-            yield input
-            yield! inputRome()
-        | _ ->
-            printfn "Введена не римская цифра I - IX"
-            yield! inputRome()
-    }
-
 let romeToInt x =
     match x with
     | "I" -> 1
@@ -27,7 +12,31 @@ let romeToInt x =
     | "VII" -> 7
     | "VIII" -> 8
     | "IX" -> 9
-    | _ -> 0
+    | _ -> 
+        printfn ""
+        printf "Не римская цифра: %s" x
+        0
+
+//let rec inputRome () =
+//    seq {
+//        printfn "Введите римскую цифру"
+//        let input = Console.ReadLine()
+//        match input with
+//        | "" -> ()
+//        | "I" | "II" | "III" | "IV" | "V"
+//        | "VI" | "VII" | "VIII" | "IX" ->
+//            yield input
+//            yield! inputRome()
+//        | _ ->
+//            printfn "Введена не римская цифра I - IX"
+//            yield! inputRome()
+//    }
+
+let rec inputRome () =
+    printfn "Введите римскую цифру"
+    Console.ReadLine().Split(' ')
+    |> Seq.map romeToInt
+    |> Seq.filter (fun x -> x > 0)
 
 let rec inputInt () =
     seq {
@@ -79,8 +88,9 @@ let main argvs =
     match task with
     | "1" ->
         printfn "Введите список из римских цифр"
-        printf "Список римских цифр переведённых на десятичное представление: "
-        inputRome() |> Seq.map romeToInt |> Seq.iter (fun n -> printf "%d " n)
+        let seqRome = inputRome()
+        printfn "Список римских цифр переведённых на десятичное представление: "
+        seqRome |> Seq.iter (fun n -> printf "%i " n)
     | "2" ->
         printfn "Введите список из десятичных цифр"
         let seqToFold = inputInt() |> foldFun
