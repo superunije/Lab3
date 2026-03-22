@@ -29,10 +29,6 @@ let romeToInt x =
     | "IX" -> 9
     | _ -> 0
 
-let mapFun seq =
-    seq
-    |> Seq.map romeToInt
-
 let rec inputInt () =
     seq {
         printfn "Введите десятичную цифру"
@@ -83,10 +79,8 @@ let main argvs =
     match task with
     | "1" ->
         printfn "Введите список из римских цифр"
-        let seqRome = inputRome() |> mapFun 
-        printf "Список римских цифр переведённых на десятичное представление: %A" seqRome
-        // for n in seqRome do printf $"{n} "
-        // Seq.iter
+        printf "Список римских цифр переведённых на десятичное представление: "
+        inputRome() |> Seq.map romeToInt |> Seq.iter (fun n -> printf "%d " n)
     | "2" ->
         printfn "Введите список из десятичных цифр"
         let seqToFold = inputInt() |> foldFun
